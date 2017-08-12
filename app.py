@@ -9,7 +9,7 @@ from datetime import datetime
 from aiohttp import web
 
 def index(request):
-    return web.Response(body=b'<h1>Awesome</h1>')
+    return web.Response(body=b'<!DOCTYPE html><html><body><p>I am normal</p><p style="color:red;">I am red</p><p style="color:blue;">I am blue</p><p style="font-size:36px;">I am big</p></body></html>	',content_type='text/html')
 
 @asyncio.coroutine
 def init(loop):
