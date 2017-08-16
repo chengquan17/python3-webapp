@@ -22,11 +22,14 @@ def getHtmlCode(url):  # 该方法传入url，返回url的html的源码
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36'
     }
     # 增加异常处理，主要是会遇到requests.exceptions.ConnectionError异常
+    #logging.debug('This is debug message')
+    logging.info('处理地址：{}'.format(url))
+    #logging.warning('This is warning message')
     try:
         r = requests.get(url, headers=headers)
     except Exception as e:
         #print("Exception: {}".format(e))
-        logging.info("Exception: {}".format(e))
+        #logging.error("Exception: {}".format(e))
         # 延迟6分钟，保险起见！
         time.sleep(360)
         r = requests.get(url, headers=headers)
@@ -48,11 +51,16 @@ def myGetTable(url, site):
     i = 0 
     ul.append({'name': 'MySQL 5.7 Reference Manual', 'url': url})
     while True:
-        if myGetNext(ul[i]['url']):
-            break:
-        tmpurl = myGetNext(ul[i]['url'])
+        if myGetNext(ul[i]['url'], site):
+            break
+        tmpurl = myGetNext(ul[i]['url'], site)
         tmpname = myGetName(tmpurl)
+        logging.info('url{}'.format(tmpurl))
+        logging.info('name{}'.format(mpname))
         ul.append({'name': tmpname, 'url': tmpurl}) 
+        i += 1
+        print(i)
+        logging.info('循环变量为：{}'.format(i))
     return ul
     
     
@@ -102,13 +110,14 @@ def myGetNext(url, site):
     """
     获取下一页的地址信息
     """    
-    ul = []
+    uln = []
     page = getHtmlCode(url)
     bs_obj = BeautifulSoup(page, 'html.parser')
     for links in bs_obj.find_all('a', {'title': re.compile("Next")}):
-        ul.append({'name': links.get_text(), 'url': site + links['href']})
-    if len(ul) > 0:
-        return ul
+        uln.append({'name': links.get_text(), 'url': site + links['href']})
+    print("uln[0]['url']:",uln[0]['url'])
+    if len(uln) > 0:
+        return uln[0]['url']
     else:
         return None
 
@@ -159,12 +168,12 @@ if __name__ == '__main__':
     #    i = i + 1
     #    myGetContext(i, link['name'], link['url'])
     #
-    print("ul[0]['name']:",ul[0]['name'])
-    print("ul[0]['url']:",ul[0]['url'])
-    print("ul[1]['name']:",ul[1]['name'])
-    print("ul[1]['url']:",ul[1]['url'])
-    print("ul[2]['name']:",ul[2]['name'])
-    print("ul[2]['url']:",ul[2]['url'])
+    #print("ul[0]['name']:",ul[0]['name'])
+    #print("ul[0]['url']:",ul[0]['url'])
+    #print("ul[1]['name']:",ul[1]['name'])
+    #print("ul[1]['url']:",ul[1]['url'])
+    #print("ul[2]['name']:",ul[2]['name'])
+    #print("ul[2]['url']:",ul[2]['url'])
     #myGetContext(1, localPath, ul[1]['url'], ul[1]['name'])
     
     
