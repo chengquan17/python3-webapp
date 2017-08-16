@@ -18,6 +18,43 @@ from bs4 import BeautifulSoup
 import requests
 from pathlib import Path
 
+
+
+def getHtmlCode(url):  # 该方法传入url，返回url的html的源码
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36'
+    }
+    # 增加异常处理，主要是会遇到requests.exceptions.ConnectionError异常
+    try:
+        r = requests.get(url, headers=headers)
+    except Exception as e:
+        print("Exception: {}".format(e))
+        # 延迟6分钟，保险起见！
+        time.sleep(360)
+        r = requests.get(url, headers=headers)
+
+    #r.encoding = 'UTF-8'
+    #  台湾网页需要制定big5编码！！！
+    r.encoding = 'big5'
+    page = r.text
+    return page
+	
+def myGetTable(url, site):
+    '''
+    获取目录
+    return:返回一个列表，每个值都是字典
+	根据不同的网站需要修改这个函数
+    '''
+    page = getHtmlCode(url)
+    bs_obj = BeautifulSoup(page, 'html.parser')
+    # string可以查找tag的文本，还可以配合正则表达式
+    for links in bs_obj.find_all('a',string=re.compile("第")):
+        ul.append({'name': links.get_text(), 'url': site + links['href']})
+    return ul
+	
+	
+	
+
 def my_get_context(num, name, url):
     """
     保存网页内容用于电子书制作
@@ -67,19 +104,33 @@ def my_get_context(num, name, url):
 
 
 
-# auther: xujie
-# date: 2017年7月19日
-# 廖雪峰的python教程，爬取了通过sigil制作epub电子书
+
 
 
 
 
 if __name__ == '__main__':
-    #url = "https://detail.tmall.com/item.htm?id=536013418359&spm=a1z09.2.0.0.6Otvb5&_u=u7kf35v1d5e"
-    #url = "http://www.baidu.com"
-    url = "https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000"
-    site = "https://www.liaoxuefeng.com"
+    '''
+    # auther: xujie
+    # date: 2017年8月16日
+    # mysql5.7在线文档，爬取了通过sigil制作epub电子书
+	# requests 库 结合 beautifulSoup4 库的使用实例
+    '''
+
+    url = "https://dev.mysql.com/doc/refman/5.7/en/"
+    site = "https://dev.mysql.com"
     html = urlopen(url)
+	
+	# localPath是自己设定的保存路径
+    localPath = 'D:/dump/mysql_doc'
+	
+	# ul保存目录链接
+    page = getHtmlCode(url)
+    print(page)
+    ul = []
+    #ul = myGetTable(url, site)
+	
+	
     #r = requests.get(url)
     #print(r)
     bs_obj = BeautifulSoup(html, 'html.parser')
@@ -90,16 +141,16 @@ if __name__ == '__main__':
     #print(bs_obj)
     #print(bs_obj.get_text())
     ul = []
-    for links in bs_obj.find_all('a', {'href': re.compile("wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/")}):
-        #print('https://www.liaoxuefeng.com/' + links['href'])
-        #print(links.get_text())
-        ul.append({'name': links.get_text(), 'url':site + links['href']})
-    i = 0
-    for link in ul:
-        #print(link)
-        i = i + 1
-        my_get_context(i, link['name'], link['url'])
-
+    #for links in bs_obj.find_all('a', {'href': re.compile("wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/")}):
+    #    #print('https://www.liaoxuefeng.com/' + links['href'])
+    #    #print(links.get_text())
+    #    ul.append({'name': links.get_text(), 'url':site + links['href']})
+    #i = 0
+    #for link in ul:
+    #    #print(link)
+    #    i = i + 1
+    #    my_get_context(i, link['name'], link['url'])
+    #
     #print(ul[1]['name'])
     #my_get_context(1, ul[1]['name'], ul[1]['url'])
     #for links in bs_obj.find_all('div', {'class': 'x-content'}):
