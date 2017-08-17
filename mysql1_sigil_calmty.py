@@ -81,11 +81,13 @@ def myGetContext(num, localPath, url, name):
     """    
     save_dir = Path(localPath)
     #print(name)
-    # 由于原来的目录名中有一个是map/reduce的名字，如果不处理，会影响文件名，故去掉‘/’
-    #name = re.sub(r'?', r'', name)
+    # 考虑到name里面有各种不合规范的字符，不能用做文件名，故提取url的文件名
+    #name = re.sub(r'\?', r'', name)
+    #name = re.sub(r'\,', r'', name)
+    filename2 = url.split('/')[-1]
     #print(name)
     
-    filename1 = str(num) + '_' + name + '.html'
+    filename1 = str(num) + '_' + filename2
     filename = save_dir / Path(filename1)
     logging.info('文件名:{}'.format(filename))
     # 判断文件是否存在，存在则跳过
