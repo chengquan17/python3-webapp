@@ -29,9 +29,11 @@ def getHtmlCode(url):  # 该方法传入url，返回url的html的源码
         r = requests.get(url, headers=headers)
     except Exception as e:
         #print("Exception: {}".format(e))
-        #logging.error("Exception: {}".format(e))
+        logging.error("Exception: {}".format(e))
+        logging.info('延迟6分钟，保险起见！')
         # 延迟6分钟，保险起见！
         time.sleep(360)
+        logging.info('处理地址：{}'.format(url))
         r = requests.get(url, headers=headers)
     r.encoding = 'UTF-8'
     #  台湾网页需要制定big5编码！！！
