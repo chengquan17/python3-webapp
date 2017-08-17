@@ -52,7 +52,8 @@ def myGetTable(url, site, localPath):
     ul.append({'name': '0. MySQL 5.7 Reference Manual', 'url': url})
     while True: 
         logging.info('循环变量为：{}'.format(i)) 
-        #myGetContext(i + 1 , localPath, ul[i]['url'], ul[i]['name']):        
+        myGetContext(i + 1 , localPath, ul[i]['url'], ul[i]['name'])
+        logging.info('已保存网页：{}'.format(ul[i]['name']))        
         tmpurl = myGetNext(ul[i]['url'], site)
         if not tmpurl:
             break
@@ -81,18 +82,24 @@ def myGetContext(num, localPath, url, name):
     save_dir = Path(localPath)
     #print(name)
     # 由于原来的目录名中有一个是map/reduce的名字，如果不处理，会影响文件名，故去掉‘/’
-    #name = re.sub(r'/', r'', name)
+    #name = re.sub(r'?', r'', name)
     #print(name)
-    logging.info('url:{}'.format(tmpurl))
-    filename1 = str(num) + name + '.html'
+    
+    filename1 = str(num) + '_' + name + '.html'
     filename = save_dir / Path(filename1)
-    print(filename)
+    logging.info('文件名:{}'.format(filename))
+    # 判断文件是否存在，存在则跳过
+    if filename.is_file():
+        logging.info('文件已经存在！跳过！！！')
+        return
+    
+    #print(filename)
     page = getHtmlCode(url)
     bs_obj = BeautifulSoup(page, 'html.parser')
     
     # 这里需要根据具体网站修改    
     for links in bs_obj.find_all('div', {'id': 'docs-body'}):
-        print(links)
+        #print(links)
         with open(filename, 'w', encoding='utf8') as f:
             f.write(str(links))
 
@@ -150,9 +157,10 @@ if __name__ == '__main__':
     #print(page)
     ul = []
     ul = myGetTable(url, site, localPath)
-    print(len(ul))
-    for link in ul:
-        print(link)    
+    #print(len(ul))
+    logging.info('目录大小：{}'.format(len(ul)))
+    #for link in ul:
+    #    print(link)    
 
 
     #i = 0
@@ -167,7 +175,7 @@ if __name__ == '__main__':
     #print("ul[1]['url']:",ul[1]['url'])
     #print("ul[2]['name']:",ul[2]['name'])
     #print("ul[2]['url']:",ul[2]['url'])
-    #myGetContext(1, localPath, ul[1]['url'], ul[1]['name'])
+    myGetContext(1, localPath, ul[1]['url'], ul[1]['name'])
     
     
     #for links in bs_obj.find_all('div', {'class': 'x-content'}):
